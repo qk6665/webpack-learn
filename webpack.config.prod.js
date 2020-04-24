@@ -1,7 +1,7 @@
-const path = require('path')
+// const path = require('path')
 const webpackMerge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.config.base')
-
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const TerserWebpackPlugin = require('terser-webpack-plugin')
 
 const webpackConfig = webpackMerge(baseWebpackConfig, {
@@ -24,18 +24,29 @@ const webpackConfig = webpackMerge(baseWebpackConfig, {
             warnings: false,
             drop_console: false,
             dead_code: true,
-            drop_debugger: true,
+            drop_debugger: true
           },
           output: {
             comments: false,
-            beautify: false,
+            beautify: false
           },
-          mangle: true,
+          mangle: true
         },
         parallel: true,
-        sourceMap: false,
-      })
+        sourceMap: false
+      }),
+      new OptimizeCSSAssetsPlugin({}) // 压缩css
     ],
+    splitChunks: { // 分割代码块
+      cacheGroups: { // 缓存组
+        commons: { // 公共部分
+          name: 'commons',
+          chunks: 'initial',
+          minChunks: 3, // 最少出现三次
+          enforce: true
+        }
+      }
+    }
   }
 
 })
